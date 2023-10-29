@@ -3,7 +3,10 @@ label OWN_clubroom_setup:
     $ is_sitting = False
     scene bg club_day
     $ play_song(audio.t5, loop = True, fadein = 2.0)
-    jump OWN_clubroom_intro
+    if persistent.OWN_has_seen_clubroom_monika == False:
+        jump OWN_clubroom_intro
+    else:
+        jump OWN_clubroom_menu
     return
 
 label OWN_clubroom_intro:
@@ -51,6 +54,7 @@ label OWN_clubroom_intro:
     m "Ah. Sorry, I must've been rambling for awhile now."
     m 3hub_static "How about we explore the club room now? "
     extend 3hua_static "Maybe we can find something {i}we{/i} never noticed before."
+    $ persistent.OWN_has_seen_clubroom_monika = True
     jump OWN_clubroom_menu
     return
     
@@ -67,9 +71,75 @@ label OWN_clubroom_menu:
             textbutton _("Talk"):
                 action [Hide("OWN_clubroom") , Jump("OWN_clubroom_talk")]
             textbutton _("Interact"):
-                action [Hide("OWN_clubroom"), Jump("OWN_Interact")]
-            textbutton _("Return to MAS"):
-                action [Hide("OWN_clubroom"), Jump("OW_Go_Back_To_Classroom")] #Placeholder
+                action [Hide("OWN_clubroom"), Jump("OWN_clubroom_interact_monika")]
+            textbutton _("Return"):
+                action [Hide("OWN_clubroom"), Show("OWN_return_question")] #Placeholder
+    jump OWN_clubroom_menu
+    return
+
+label OWN_clubroom_talk:
+    call screen dialog(message="No Talks added", ok_action=Return())
+    jump OWN_clubroom_menu
+
+
+label OWN_clubroom_interact_monika:
+    hide monika
+    call screen OWN_clubroom_interact_monika_before_nightmare()
+    screen OWN_clubroom_interact_monika_before_nightmare():
+        imagemap:
+            ground "bg club_day"
+        zorder 50
+        style_prefix "hkb"
+        vbox:
+            xpos 1166
+            ypos 0
+            textbutton _("Return") action [Hide("OWN_clubroom_interact_monika_before_nightmare"), Jump("OWN_clubroom_menu")] hover_sound gui.hover_sound
+        
+        textbutton _("Corridor"):
+            style "hkb_button"
+            style_prefix "hkb"
+            xpos 0
+            ypos 300
+            action [Hide("OWN_clubroom_interact_monika_before_nightmare"), Jump("OWN_leave_classroom_monika")] hover_sound gui.hover_sound
+            #xysize(80,None)
+
+        textbutton _("TempScare"):
+            style "hkb_button"
+            style_prefix "hkb"
+            xpos 425
+            ypos 425
+            action [Hide("OWN_clubroom_interact_monika_before_nightmare"),Jump("temp_scare")] hover_sound gui.hover_sound
+
+label temp_scare:
+    show sayori happy_thoughts at t31 zorder MAS_MONIKA_Z
+    show natsuki ghost3 at t11 zorder MAS_MONIKA_Z
+    show yuri dragon at t22 zorder MAS_MONIKA_Z
+    pause 0.5
+    show screen tear(20, 0.1, 0.1, 0, 40)
+    play sound "sfx/s_kill_glitch1.ogg"
+    pause 0.2
+    stop sound
+    hide screen tear
+    hide sayori
+    hide natsuki
+    hide yuri
+    call screen OWN_clubroom_interact_monika_before_nightmare()
+
+
+
+label OWN_leave_classroom_monika:
+    show monika 4hub_static at h11 zorder MAS_MONIKA_Z
+    m "You want to go to the corridor [mas_get_player_nickname()]?{nw}"
+    menu:
+        m "You want to go to the corridor [mas_get_player_nickname()]?{fast}"
+        "Yes":
+            m "Okay, I'll lead the way."
+            jump OWN_corridor_setup
+        "No":
+            call screen OWN_clubroom_interact_monika_before_nightmare()
+
+
+
 
     
 

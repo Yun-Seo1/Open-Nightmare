@@ -1,7 +1,3 @@
-image bg creepy closet = "Submods/OpenNightmare/images/closet_creepy.png"
-image cg captured = "Submods/OpenNightmare/images/test.jpg"
-
-
 label OWN_test_cg:
     hide monika
     scene cg captured with dissolve_scene_full
@@ -16,9 +12,10 @@ label OWN_test_cg:
 
 #TODO 1: Hide the calendar from the menu
 #Use this: https://github.com/Monika-After-Story/MonikaModDev/blob/4d30921fe293e246ce2dd596cd840150f019a8bb/Monika%20After%20Story/game/script-islands-event.rpy#L1938
+#TODO 2: look for ways to create files using python
+#TODO 3: Replace all RTMAS with Nightmare version in case both versions aren't installed
+#TODO 4: Replace OW_Go_Back_To_Classroom with Nightmare version
 
-
-default OWN_smallglitch = glitchtext(5)
 #############
 #PYTHON STUFF
 #############
@@ -130,6 +127,9 @@ init 10002:
                             yalign 0.5
                             action [Hide("mas_extramenu_area"), Jump("view_bonkmenu")] hover_sound gui.hover_sound
 
+#######
+#LABELS
+#######
 
 label view_OWN:
     stop music
@@ -142,6 +142,61 @@ label view_OWN:
         OWN_submenu()
     return
 
+
+label OWN_temp:
+    m 2wta "You want to show me something?{nw}"
+    $ _history_list.pop()
+    menu:
+        m "You want to show me something?{fast}"
+        "Yes":
+            m 1sua "Huh? You want to take me somewhere?"
+            m 6sublo "You must have added something while I wasn't looking."
+            m 6sublb "Alright, I can't wait to see what surprise you have for me, let's go."
+            window hide
+            hide monika
+            show OWN_ghost_monika zorder 10
+            stop music fadeout 4
+            show black zorder 100 with Dissolve(5.0, alpha=True)
+            pause 1.0
+            $ enable_esc()
+            $ HKBHideButtons()
+            hide OWN_ghost_monika
+            if persistent._OWN_first_time_opening == False:
+                $ consolehistory = []
+                call updateconsole("Accessing...", "20%")
+                pause 1.5
+                call updateconsole("Accessing...", "50%")
+                pause 1.0
+                ch "..."
+                call updateconsole("Accessing...", "90%")
+                ch "Hm..."
+                call updateconsole("Accessing...", "100%")
+                call updateconsole("Accessing...", "Access Granted")
+                ch "Perfect...{w=1.0} They will suffice"
+                call updateconsole("Restoring files...", "Restoration complete")
+                ch "Welcome back."
+                call hideconsole
+                $ persistent._OWN_first_time_opening = True
+            hide noise
+            hide vignette
+            call OWN_clubroom_setup
+        "No":
+            m 6ekblc "Oh... For a second you got me excited because it sounded like something special."
+            m 6ekbld "It's okay, maybe some other time?"
+            m 6ekblp "I really want to see what this is. I guess you can say it peaked my interest, ehehe~."
+            jump OWN_hide_menu
+
+label OWN_hide_menu:
+    hide noise
+    hide vignette
+    hide OWN_ghost_monika
+    stop music
+    $ play_song(persistent.current_track)
+    jump ch30_loop
+
+########
+#SCREENS
+########
 screen OWN_MENU():
     zorder 50
     style_prefix "hkb"
@@ -163,53 +218,11 @@ screen OWN_MENU():
         ypos 0
         textbutton ("Dev Only") action Jump("OWN_dev_menu") hover_sound gui.hover_sound
 
-label OWN_temp:
-    m 2wta "You want to show me something?{nw}"
-    $ _history_list.pop()
-    menu:
-        m "You want to show me something?{fast}"
-        "Yes":
-            m 1sua "Huh? You want to take me somewhere?"
-            m 6sublo "You must have added something while I wasn't looking."
-            m 6sublb "Alright, I can't wait to see what surprise you have for me, let's go."
-            window hide
-            hide monika
-            show OWN_ghost_monika zorder 10
-            stop music fadeout 4
-            show black zorder 100 with Dissolve(5.0, alpha=True)
-            pause 1.0
-            $ enable_esc()
-            $ HKBHideButtons()
-            hide OWN_ghost_monika
-            $ consolehistory = []
-            call updateconsole("Accessing...", "20%")
-            pause 1.5
-            call updateconsole("Accessing...", "50%")
-            pause 1.0
-            ch "..."
-            call updateconsole("Accessing...", "90%")
-            ch "Hm..."
-            call updateconsole("Accessing...", "100%")
-            call updateconsole("Accessing...", "Access Granted")
-            ch "Perfect...{w=1.0} They will suffice"
-            call updateconsole("Restoring files...", "Restoration complete")
-            ch "Welcome back."
-            call hideconsole
-            hide noise
-            hide vignette
-            call OWN_clubroom_setup
-        "No":
-            m 6ekblc "Oh... For a second you got me excited because it sounded like something special."
-            m 6ekbld "It's okay, maybe some other time?"
-            m 6ekblp "I really want to see what this is. I guess you can say it peaked my interest, ehehe~."
-            jump ch30_loop
 
-label OWN_hide_menu:
-    hide noise
-    hide vignette
-    hide OWN_ghost_monika
-    stop music
-    $ play_song(persistent.current_track)
-    jump ch30_loop
+screen OWN_return_question:
+    label "Return to [RTMAS]?"
+    textbutton _("Yes"):
+        action [Hide("OWN_return_question"),Jump("OW_Go_Back_To_Classroom")] #temp, change later
+    textbutton _("No"):
+        action [Hide("OWN_return_question"), Return()]
 
-    

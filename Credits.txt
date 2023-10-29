@@ -1,2 +1,6 @@
 Submods/OpenNightmare/images
-closet_creepy by null(edit of incinerator.chr[YuriAfterStory])
+closet_creepy by null(edit of incinerator.chr[YuriAfterStory]) #reminder to change to the other image
+fun_unny_happy_happy_fun.png by SpringingTraps#5243
+s.png by Average#3201
+t.png by Average#3201
+u.png by JaxxHunter

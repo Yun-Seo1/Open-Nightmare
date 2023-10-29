@@ -8,6 +8,6 @@ init -990 python:
     store.mas_submod_utils.Submod(
         author="Yun",
         name="Open Nightmare",
-        description="A submod that...",
-        version="1.0.0",
+        description="An incomplete submod that...",
+        version="0.5.0",
     )
